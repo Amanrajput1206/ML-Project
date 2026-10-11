@@ -28,8 +28,9 @@ Findings that drive the plan:
 3. **`flight_class`** (Economy 59% / Business 41%) almost certainly splits the price into two regimes. That's why the mean is about 3× the median. We should look at the target per class and consider separate models per class, or class-interaction terms.
 4. `stops` is ordinal (zero / one / two_or_more), but `two_or_more` is rare (66 rows).
 5. `flight` has about 1,070 distinct values, and 35 test rows use flights never seen in train. We'll use the prefix (airline) and maybe the numeric part, not the raw code one-hot encoded.
-6. 314 train rows have identical features but may have different prices. This is a noise floor to mention under EDA.
-7. Low-cardinality categoricals: 6 cities × 2, 6 time slots × 2. `days_left` ranges 1–57 and price likely depends on it non-linearly (fares jump close to departure).
+6. ~~314 train rows have identical features but may have different prices.~~ **Corrected by EDA (11 Oct):** 279 rows are exact copies (features *and* price), so drop them before CV. Only 35 groups have conflicting prices (the real noise floor).
+7. Low-cardinality categoricals: 6 cities × 2, 6 time slots × 2. `days_left` ranges 1–57. ~~Price likely depends on it non-linearly.~~ **EDA:** the effect is weak; only the last ~4 days show a consistent rise (+22–29%). Time slots barely matter.
+7b. **Added by EDA:** airline *within* class is the second-biggest factor (R² 0.76 inside Business). Premium carriers' Economy costs about as much as budget Business, so linear models need class × airline interactions. Full findings: `notebooks/regression/01_eda.ipynb` (summary at the bottom).
 8. **Open question:** Kaggle's evaluation metric (RMSE / MAE / R² / RMSLE). Check it on the competition page. It decides whether to train on log(price) and how to transform predictions back.
 
 ## 3. Models in scope (Part 1 of the course)

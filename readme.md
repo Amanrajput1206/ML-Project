@@ -5,6 +5,16 @@
 | Regression: Domestic Flight Price Prediction | `dataset/regression/` | `plans/01-project-plan.md` |
 | Classification: Vehicle Class Prediction | `dataset/classification/` | `plans/02-classification-plan.md` |
 
+## Setup
+
+```bash
+py -3.11 -m venv .venv
+.venv/Scripts/python -m pip install -r requirements.txt
+.venv/Scripts/python -m ipykernel install --user --name ml-project --display-name "ML Project (.venv)"
+```
+
+Open any notebook in VS Code and select the **ML Project (.venv)** kernel. Run `notebooks/00_setup_check.ipynb` first. All paths come from `src/config.py`, which also works unchanged on Kaggle (to use `src/` there, upload it as a Kaggle dataset).
+
 Read the project plans for steps and `plans/final-report-prototype.docx` for the expected outcome (regression).
 
 ## Classification: Vehicle Class Prediction
