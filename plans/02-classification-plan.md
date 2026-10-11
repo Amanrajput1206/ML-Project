@@ -21,15 +21,19 @@ Findings that drive the plan:
 
 1. **Train rows 7501–10000 are exact copies of earlier rows.** There are 2,500 pairs with identical features *and* identical labels, so only 7,500 rows are unique. **Drop the duplicates before any CV split.** If you keep them, a row and its copy can land in different folds, so the model is validated on data it has already seen and the CV score comes out too high (leakage). This is the main preprocessing point for the report and viva. (Dropping them also stops those 2,500 rows from getting double weight in training.)
 2. **The target is balanced across 3 classes:** 0 → 3,389, 1 → 3,326, 2 → 3,285. Accuracy is a fair metric and no resampling or class weights are needed. Still use *stratified* folds.
-3. **The class meanings aren't given.** Per-class medians suggest (*inferred, not official*):
-   - 0 ≈ compact/economy: best fuel efficiency, lowest hp/torque, smaller.
-   - 1 ≈ large/SUV-like: heaviest, longest, widest, most cargo, highest ground clearance, longest braking distance.
-   - 2 ≈ sports/performance: most hp/torque/cylinders, 0–100 in ~4.6 s, lowest clearance and drag, biggest battery.
-   Several features separate the classes clearly on their own (clearance, acceleration, cargo, weight), so expect high accuracy. The interesting question is *which* model and why, not squeezing out the last 0.1%.
+3. **Classes (official, from Kaggle): 0 = Sedan, 1 = SUV, 2 = Sports Car.** The per-class medians match:
+   - Sedan: best fuel efficiency, lowest hp/torque, mid-sized.
+   - SUV: heaviest, longest, widest, most cargo, highest ground clearance, longest braking distance.
+   - Sports Car: most hp/torque/cylinders, 0–100 in ~4.6 s, lowest clearance and drag.
+   Several features separate the classes clearly on their own (clearance, acceleration, cargo, weight), so expect high accuracy on clean data. The interesting question is *which* model and why, not squeezing out the last 0.1%.
+3b. **⚠ The hidden (private) evaluation data has extra random measurement noise** (Kaggle: "a model that performs well on the training data is not necessarily the model that will perform best on the final evaluation"). **This is the most important fact for model choice.**
+   - Checked 11 Oct: the public `test.csv` has the same feature spreads as train (std ratio 0.98–1.04 on every feature), so the noise most likely **only exists in the private set**. The public leaderboard will overestimate the final score and can't be used to judge robustness.
+   - So we have to **simulate the noise in CV ourselves**: add Gaussian noise to the *validation* fold's features (σ = k × each feature's std, for k ∈ {0, 0.05, 0.1, 0.2, 0.3}) and plot accuracy vs k for each model. Pick the model that stays accurate as k grows, not the one with the best k = 0 score.
+   - Expectations to test: a deep unpruned tree is fragile, because a small shift can push a point across a hard threshold. Smoother models (logistic, LDA/NB) and models that use *many* features at once (averaging out per-feature noise) should degrade more gracefully. Pruning and stronger regularization (smaller `C`) should help robustness even if they cost a little clean accuracy. Also try **training-time noise augmentation** (add the same kind of noise to training rows) as a robustness technique.
 4. **All 20 features are numeric, on very different scales** (drag 0.22–0.42 vs weight 1,100–2,600 kg). Logistic regression (especially with regularization) needs standardization. Trees and Naive Bayes don't.
 5. **Expect strong correlation between features** (weight/length/wheelbase/tank/width; hp/torque/displacement/cylinders; city vs highway efficiency). This breaks the *naive* independence assumption, which makes it a good case for comparing Naive Bayes with a full-covariance Bayes classifier. Check with a correlation heatmap in EDA.
 6. No test row exactly matches a train row, and test has no internal duplicates. The sample submission ids (10001–12500) are in the same order as test.
-7. **Open question:** the Kaggle evaluation metric (accuracy vs macro-F1, etc.) and the daily submission limit. Check the competition's Overview/Evaluation tab.
+7. **Metric: accuracy** (confirmed on Kaggle). With balanced classes that's fair. Daily submission limit is still unknown.
 
 ## 3. Models in scope (Part 1 of the course)
 
@@ -58,8 +62,9 @@ Note: if model 2 (QDA/LDA) isn't considered "taught", keep it only as a supporti
 - **Step 0: `train.drop_duplicates(subset=features)`, giving 7,500 rows.** Do this before splitting.
 - **`StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)`** on the deduplicated train set.
 - Anything fitted on data (the `StandardScaler`, polynomial expansion) goes inside an sklearn `Pipeline` so it's re-fitted on each fold.
-- Report CV mean ± std in the competition metric, plus accuracy, macro-F1 and a confusion matrix (which classes get mixed up, e.g. 0 vs 1?).
-- Pick the final model by **CV score**, using the public LB only as a sanity check.
+- Report CV accuracy mean ± std, plus macro-F1 and a confusion matrix (which classes get mixed up, e.g. Sedan vs SUV?).
+- **Also report noisy-CV accuracy** (validation features perturbed at each noise level k, see §2 item 3b), as a robustness curve per model.
+- Pick the final model by **noisy-CV accuracy** (at a moderate k, e.g. 0.1–0.2) together with clean CV. The public LB is only a format/sanity check here, because it doesn't contain the extra noise.
 - Submission format: `vehicle_id,vehicle_class` with integer labels, same row order as `test.csv`.
 
 ## 5. Repo layout
@@ -93,11 +98,12 @@ Project/
 | 13 Oct | **3. Tuning:** `C` for L1/L2, polynomial degree, tree depth / leaf size / `ccp_alpha`; validation curves | tuned scores, curves |
 | 14 Oct | **4. Submissions:** top 2–3 CV models; pick the final 2 for the private LB | public LB scores recorded |
 | 14–15 Oct | **5. Report + GitHub:** the same 8 required sections | report, repo link |
-| Ongoing | **6. Viva prep:** why dedupe before CV, NB independence vs full covariance, generative vs discriminative, why scale for logistic but not trees, pruning | — |
+| Ongoing | **6. Viva prep:** why public LB ≠ private LB here (noise), how we simulated it, why dedupe before CV, NB independence vs full covariance, generative vs discriminative, why scale for logistic but not trees, pruning | — |
 
 ## 7. Open questions
 
-1. What's the Kaggle evaluation metric and the daily submission limit?
+1. ~~What's the metric?~~ Accuracy. Daily submission limit is still unknown.
 2. Are QDA/LDA acceptable as "Bayes classifier" models? Are KNN/RF/boosting allowed? Assume no for the second unless the TA says yes.
-3. Is there an official meaning for classes 0/1/2? (Only useful for the report narrative; the models don't need it.)
+3. ~~Class meanings?~~ 0 Sedan, 1 SUV, 2 Sports Car.
+3b. How large is the private-set noise? Unknown, so we use a range of k values. Worth asking the TA whether a rough magnitude can be shared.
 4. Is there one report covering both competitions, or two separate reports? (This decides whether the report prototype gets a classification section or a separate file.)

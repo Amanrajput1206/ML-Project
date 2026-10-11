@@ -2,9 +2,28 @@
 
 ## Background
 
-> TODO: paste the official description from the Kaggle competition's Data tab (the page needs a login, so it couldn't be fetched).
+**VehicleVision: Robust Vehicle Classification** (from the Kaggle Overview page)
 
-Each row describes one vehicle by 20 numeric specifications: engine, dimensions, weight, fuel efficiency, performance, and so on. The goal is to predict the vehicle's class (`vehicle_class`, one of 3 labels: 0, 1, 2) from these specifications.
+Can you build a machine learning model that can reliably identify a vehicle type from its specifications and performance measurements?
+
+You are given vehicle measurements such as engine displacement, horsepower, vehicle weight, wheelbase, fuel efficiency, cargo capacity, acceleration, braking distance, tire width, and aerodynamic characteristics. The task is to classify each vehicle into one of three categories:
+
+| Value | Vehicle Type |
+|---|---|
+| 0 | Sedan |
+| 1 | SUV |
+| 2 | Sports Car |
+
+**The challenge** (verbatim points from Kaggle):
+
+- The training data may contain data-quality issues such as duplicate vehicle measurements.
+- `vehicle_id` identifies a record, but it should not be treated as a predictive vehicle characteristic.
+- **The hidden evaluation data introduces measurement uncertainty.** The final evaluation samples are collected under a different measurement environment, where the recorded vehicle characteristics may contain additional random measurement error. Therefore, a model that performs well on the training data is not necessarily the model that will perform best on the final evaluation.
+- This is a synthetic educational dataset: realistic names and ranges, but the records do not represent actual vehicles.
+
+**Evaluation:** classification **accuracy** (fraction of predictions that exactly match the hidden classes).
+
+**Submission:** `vehicle_id,vehicle_class`, one predicted class per test row.
 
 ## Data Description
 
@@ -14,7 +33,7 @@ The dataset folder contains the following files:
 - **test.csv:** 2500 x 21
 - **sample_submission.csv:** 2500 x 2 (`vehicle_id,vehicle_class`)
 
-Files were renamed from the Kaggle download names (`vehicle_train_10000.csv`, `vehicle_test.csv`, `vehicle_sample_submission.csv`) to match `dataset/regression/`.
+Files were renamed from the downloaded names (`vehicle_train_10000.csv`, `vehicle_test.csv`, `vehicle_sample_submission.csv`) to match `dataset/regression/`. The Kaggle page calls them `vehicle_train.csv`, `vehicle_public_test.csv`, `vehicle_sample_submission.csv`.
 
 ### Columns
 
@@ -41,4 +60,4 @@ Files were renamed from the Kaggle download names (`vehicle_train_10000.csv`, `v
 | `tire_width_mm`                | Tyre width in mm.                                 |
 | `drag_coefficient`             | Aerodynamic drag coefficient.                     |
 | `battery_capacity_kwh`         | Battery capacity in kWh.                          |
-| `vehicle_class`                | **Target.** Vehicle class label: 0, 1 or 2 (train only). |
+| `vehicle_class`                | **Target.** 0 = Sedan, 1 = SUV, 2 = Sports Car (train only). |

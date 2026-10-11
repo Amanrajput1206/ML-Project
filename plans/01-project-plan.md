@@ -31,7 +31,7 @@ Findings that drive the plan:
 6. ~~314 train rows have identical features but may have different prices.~~ **Corrected by EDA (11 Oct):** 279 rows are exact copies (features *and* price), so drop them before CV. Only 35 groups have conflicting prices (the real noise floor).
 7. Low-cardinality categoricals: 6 cities × 2, 6 time slots × 2. `days_left` ranges 1–57. ~~Price likely depends on it non-linearly.~~ **EDA:** the effect is weak; only the last ~4 days show a consistent rise (+22–29%). Time slots barely matter.
 7b. **Added by EDA:** airline *within* class is the second-biggest factor (R² 0.76 inside Business). Premium carriers' Economy costs about as much as budget Business, so linear models need class × airline interactions. Full findings: `notebooks/regression/01_eda.ipynb` (summary at the bottom).
-8. **Open question:** Kaggle's evaluation metric (RMSE / MAE / R² / RMSLE). Check it on the competition page. It decides whether to train on log(price) and how to transform predictions back.
+8. **Open question:** Kaggle's evaluation metric (RMSE / MAE / R² / RMSLE). **The Overview page (checked 11 Oct) doesn't name one.** It only says "relative performance in the Kaggle leaderboard". Find it from the Leaderboard tab or the score shown after a first submission. It decides whether to train on log(price) and how to transform predictions back. Until it's known, report RMSE, MAE, R² and RMSLE in CV for every model.
 
 ## 3. Models in scope (Part 1 of the course)
 
@@ -112,7 +112,7 @@ Project/
 
 ## 8. Open questions before starting
 
-1. What's the Kaggle evaluation metric and the daily submission limit? (Check the competition Overview/Evaluation tab.)
+1. What's the Kaggle evaluation metric and the daily submission limit? The Overview tab doesn't say. Check the Leaderboard tab, or infer it from the baseline submission's score. Submission must be 3898 × 2 with columns `id,price`.
 2. ~~Is the classification competition going to be planned and done in parallel?~~ Yes. Data was added on 11 Oct; see `02-classification-plan.md`.
 3. Are KNN / Random Forest / boosting allowed? Assume **no** unless the TA says yes.
 4. Who on the team takes which part? (See §7.)
