@@ -7,3 +7,5 @@ seaborn==0.13.2
 jupyter
 ipykernel
 nbconvert
+xgboost==3.2.0
+catboost==1.2.10

@@ -33,12 +33,12 @@ Findings that drive the plan:
 4. **All 20 features are numeric, on very different scales** (drag 0.22–0.42 vs weight 1,100–2,600 kg). Logistic regression (especially with regularization) needs standardization. Trees and Naive Bayes don't.
 5. **Expect strong correlation between features** (weight/length/wheelbase/tank/width; hp/torque/displacement/cylinders; city vs highway efficiency). This breaks the *naive* independence assumption, which makes it a good case for comparing Naive Bayes with a full-covariance Bayes classifier. Check with a correlation heatmap in EDA.
 6. No test row exactly matches a train row, and test has no internal duplicates. The sample submission ids (10001–12500) are in the same order as test.
-7. **Metric: accuracy** (confirmed on Kaggle). With balanced classes that's fair. Daily submission limit is still unknown.
+7. **Metric: accuracy** (confirmed on Kaggle). With balanced classes that's fair. **Daily submission limit:** regression shows 100/day; check this competition's submit dialog.
 
 ## 3. Models in scope (Part 1 of the course)
 
 From the decks in `../PPTs/`: the Bayes classifier → Naive Bayes → multiclass classification (10 Sept), logistic regression (15/17 Sept), decision trees with pruning (29 Sept). Linear/Ridge/Lasso regression are for the regression competition.
-**Random Forest, boosting and KNN haven't been taught, so don't use them** unless the TA confirms they're allowed.
+**Update (TA, 11 Oct):** models built on concepts taught before the deadline are allowed, as long as we can explain how they work in the viva. Decision trees were taught, so **tree ensembles are allowed: Random Forest, XGBoost, CatBoost**. SVM and neural networks come after the midsem and stay **out**. KNN wasn't mentioned, so keep it out unless asked.
 
 Planned model ladder (each row gets a "best score" entry in the report table):
 
@@ -102,8 +102,8 @@ Project/
 
 ## 7. Open questions
 
-1. ~~What's the metric?~~ Accuracy. Daily submission limit is still unknown.
-2. Are QDA/LDA acceptable as "Bayes classifier" models? Are KNN/RF/boosting allowed? Assume no for the second unless the TA says yes.
+1. ~~What's the metric?~~ Accuracy. Submission limit: check the submit dialog (regression is 100/day).
+2. Are QDA/LDA acceptable as "Bayes classifier" models? ~~Are KNN/RF/boosting allowed?~~ Resolved 11 Oct: RF/XGBoost/CatBoost yes (must be explainable in the viva), SVM/NN no, KNN unconfirmed.
 3. ~~Class meanings?~~ 0 Sedan, 1 SUV, 2 Sports Car.
 3b. How large is the private-set noise? Unknown, so we use a range of k values. Worth asking the TA whether a rough magnitude can be shared.
 4. Is there one report covering both competitions, or two separate reports? (This decides whether the report prototype gets a classification section or a separate file.)
