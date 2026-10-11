@@ -6,8 +6,8 @@
 - **Team:** #12 **Savage** — Swapan Aggarwal, Anshuman Joshi, Vijay Kumar S, Aman Rajput. TA: Akshat Batra.
 - **Deadline:** **15 Oct 2026** (today is 9 Oct, so about 6 days).
 - **Two competitions per team** (from `docs/Machine Learning Project-I.xlsx`):
-  - Regression: `kaggle.com/t/ec0b1e254b7b442cafc64d9073d7dafe`. This is the flight-price data in `dataset/`.
-  - Classification: `kaggle.com/t/d351b70c13654f209350dc08629f8955`. **There's no data for it here yet, and this plan doesn't cover it.**
+  - Regression: `kaggle.com/t/ec0b1e254b7b442cafc64d9073d7dafe`. This is the flight-price data in `dataset/regression/`.
+  - Classification: `kaggle.com/t/d351b70c13654f209350dc08629f8955`. Vehicle-class data in `dataset/classification/`. **This plan doesn't cover it; see `02-classification-plan.md`.**
 - **Grading (15M):** Preprocessing 2 · Variety of models 3 · Viva + Report 5 · Private-LB performance 5.
   The public leaderboard doesn't count, so **a sound CV setup matters more than chasing the public LB.**
 - **Hard rules:** only use models taught in Part 1; try several models (one good model isn't enough); use fixed random seeds everywhere; put a GitHub link in the report; keep our own code (no sharing between teams).
@@ -65,7 +65,9 @@ Planned model ladder (every row gets a "best score" entry in the report table):
 
 ```
 Project/
-  dataset/            # given (train/test/sample_submission), git-ignored if large
+  dataset/            # given, git-ignored if large
+    regression/       #   train/test/sample_submission + dataset-details.md
+    classification/   #   same layout (see 02-classification-plan.md)
   docs/               # given
   plans/              # this plan
   notebooks/
@@ -110,6 +112,6 @@ Project/
 ## 8. Open questions before starting
 
 1. What's the Kaggle evaluation metric and the daily submission limit? (Check the competition Overview/Evaluation tab.)
-2. Is the classification competition going to be planned and done in parallel? Its data isn't downloaded yet.
+2. ~~Is the classification competition going to be planned and done in parallel?~~ Yes. Data was added on 11 Oct; see `02-classification-plan.md`.
 3. Are KNN / Random Forest / boosting allowed? Assume **no** unless the TA says yes.
 4. Who on the team takes which part? (See §7.)

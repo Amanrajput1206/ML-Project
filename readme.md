@@ -1,6 +1,18 @@
-# ML Project - Domestic Flight Price Prediction Challenge
+# ML Project-I: Two Kaggle Competitions
 
-read the project plan for steps and final-report-prototype for expected outcome.
+| Task | Data | Plan |
+|---|---|---|
+| Regression: Domestic Flight Price Prediction | `dataset/regression/` | `plans/01-project-plan.md` |
+| Classification: Vehicle Class Prediction | `dataset/classification/` | `plans/02-classification-plan.md` |
+
+Read the project plans for steps and `plans/final-report-prototype.docx` for the expected outcome (regression).
+
+## Classification: Vehicle Class Prediction
+
+Predict `vehicle_class` (3 classes: 0, 1, 2) from 20 numeric vehicle specifications (engine, dimensions, weight, fuel efficiency, performance).
+Files: `train.csv` (10000 × 22), `test.csv` (2500 × 21), `sample_submission.csv` (2500 × 2). Full column list in `dataset/classification/dataset-details.md`.
+
+## Regression: Domestic Flight Price Prediction
 
 ## Dataset Description
 
