@@ -48,11 +48,12 @@ def log_target(model):
     return TransformedTargetRegressor(regressor=model, func=np.log, inverse_func=np.exp)
 
 
-def cross_validate(model, X, y, task, name, params=None, notes="", log=True):
+def cross_validate(model, X, y, task, name, params=None, notes="", log=True, extra=None):
     """K-fold CV (stratified for classification) with config.SEED. Returns per-fold scores as a DataFrame.
 
     The model is cloned and re-fitted on each fold's training part, so anything it learns from data
     (imputation medians, scaling, encoders) never sees that fold's validation rows.
+    `extra`: additional columns for the log row (e.g. noisy-CV accuracies).
     """
     metric_fn = TASK_SETUP[task][1]
     primary = PRIMARY[task]
@@ -73,6 +74,7 @@ def cross_validate(model, X, y, task, name, params=None, notes="", log=True):
         for m in folds.columns:
             summary[f"{m}_mean"] = folds[m].mean()
             summary[f"{m}_std"] = folds[m].std()
+        summary.update(extra or {})
         summary.update({"notes": notes, "public_lb": ""})
         path = config.results_dir(task) / "experiments.csv"
         log_df = pd.DataFrame([summary])
@@ -118,6 +120,27 @@ def oof_predict(model, X, y, task):
     for tr, va in _splitter(task).split(X, y):
         pred[va] = clone(model).fit(X.iloc[tr], y.iloc[tr]).predict(X.iloc[va])
     return pred
+
+
+def noise_curve(model, X, y, task, ks=(0, 0.05, 0.1, 0.2, 0.3), seed=config.SEED):
+    """Robustness check for the classification task, whose hidden test set has extra measurement noise.
+
+    Same folds as cross_validate(). The model is trained on the clean training part; then the validation
+    features get Gaussian noise with std = k x (that feature's std in the training part), for each k.
+    Returns one row per k with the mean and std of the primary metric over folds.
+    k = 0 is ordinary CV."""
+    metric_fn, primary = TASK_SETUP[task][1], PRIMARY[task]
+    X, y = X.reset_index(drop=True), pd.Series(np.asarray(y))
+    rows = []
+    for fold, (tr, va) in enumerate(_splitter(task).split(X, y)):
+        fitted = clone(model).fit(X.iloc[tr], y.iloc[tr])
+        sd = X.iloc[tr].std().to_numpy()
+        rng = np.random.default_rng(seed + fold)  # same noise draw for every model -> fair comparison
+        base = rng.standard_normal((len(va), X.shape[1]))
+        for k in ks:
+            Xv = X.iloc[va] + base * sd * k
+            rows.append({"k": k, "fold": fold, primary: metric_fn(y.iloc[va], fitted.predict(Xv))[primary]})
+    return pd.DataFrame(rows).groupby("k")[primary].agg(["mean", "std"])
 
 
 def summarize(folds: pd.DataFrame) -> pd.Series:

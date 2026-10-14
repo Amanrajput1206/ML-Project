@@ -9,8 +9,6 @@ Inside each class, Airline is the second biggest factor -
 - **Budget** carriers' Economy costs about ₹7–9k.
 - **Premium** carriers' Economy is *always* above ₹20k, about the price of budget Business.
 
-
-
 **2. Data quality, which is the 2 marks for preprocessing.**
 
 - Missing `airline` can be filled **exactly** from the flight-code prefix.
@@ -23,3 +21,9 @@ Inside each class, Airline is the second biggest factor -
 - `days_left` only matters in the last ~4 days, against the plan's expectation.
 - Time slots barely matter at all.
 - Stops and duration overlap, since more stops means longer flights
+
+
+
+## Submission -
+
+The public Submissions are our predictions on the test data. This is just for the public leaderboard and there are hidden test cases as well and they will not be revealed. Hence it's better to use Cross-Validation score as compared to a Loss function on the entire dataset. 
